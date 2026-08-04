@@ -71,13 +71,29 @@ function nextQ(){
    $("#homeBtn").onclick=()=>go("home");
  }else renderLesson();
 }
+
+function renderGrammarArticle(l){
+ const g=l.grammar;
+ let h=`${header(g.title,`${g.level} · понятное объяснение для русскоязычных`)}`;
+ h+=`<div class="card grammar-article"><div class="grammar-summary"><strong>Главная мысль</strong><p>${g.summary}</p></div>`;
+ g.sections.forEach(s=>h+=`<section class="rule-section"><h3>${s.heading}</h3><p>${s.body}</p></section>`);
+ h+=`<section class="rule-section"><h3>Типичные ошибки</h3><div class="mistake-list">${g.mistakes.map(m=>`<div class="mistake-item">⚠️ ${m}</div>`).join("")}</div></section>`;
+ h+=`<section class="rule-section"><h3>Живые примеры</h3><div class="example-list">${g.examples.map(e=>`<div class="example-item"><b>${e[0]}</b><span>${e[1]}</span></div>`).join("")}</div></section>`;
+ h+=`<button id="practiceGrammar" class="btn purple" style="width:100%;margin-top:16px">Закрепить правило упражнениями</button></div>`;
+ app.innerHTML=h;
+ $("#practiceGrammar").onclick=()=>{qIndex=0;currentSet=makeQuestions(l);route="lesson";renderLesson();nav()};
+}
+
 function renderGrammar(){
  const list=lessons.filter(l=>l.kind==="grammar");
- app.innerHTML=header("Грамматика",`${list.length} отдельных тем от A1 до B1`)+
- `<div class="card"><p class="small">Каждая тема содержит краткое правило и упражнения на примерах.</p></div>`+
+ app.innerHTML=header("Грамматика",`${list.length} подробных тем для русскоязычных`)+
+ `<div class="card"><p class="small">Сначала прочитай правило, сравнение с русским, типичные ошибки и примеры. Затем переходи к упражнениям.</p></div>`+
  `<div class="section"><h3>Темы</h3><span>${list.length}</span></div>`+
- list.map(l=>`<div class="lesson" data-id="${l.id}"><div class="icon">📘</div><div><h4>${l.title}</h4><p>${l.description}</p></div><strong>›</strong></div>`).join("");
- document.querySelectorAll(".lesson").forEach(e=>e.onclick=()=>start(e.dataset.id));
+ list.map(l=>`<div class="lesson" data-id="${l.id}"><div class="icon">📘</div><div><h4>${l.title}</h4><p>${l.description}</p><span class="small">${l.level}</span></div><strong>›</strong></div>`).join("");
+ document.querySelectorAll(".lesson").forEach(e=>e.onclick=()=>{
+   activeLesson=lessons.find(x=>x.id===e.dataset.id);
+   route="grammar_article";renderGrammarArticle(activeLesson);nav();
+ });
 }
 function renderReview(){
  const unique=[...new Set(state.mistakes)].slice(-100);
@@ -110,6 +126,6 @@ function renderProfile(){
  <div class="profile-item"><span>💬 Разговорных модулей</span><strong>${C.meta.colloquialLessons}</strong></div>
  <div class="profile-item"><span>🧠 Ошибок</span><strong>${state.mistakes.length}</strong></div></div>`;
 }
-function render(){if(route==="home")renderHome();else if(route==="grammar")renderGrammar();else if(route==="review")renderReview();else if(route==="dictionary")renderDictionary();else if(route==="lesson")renderLesson();else renderProfile()}
+function render(){if(route==="home")renderHome();else if(route==="grammar")renderGrammar();else if(route==="grammar_article")renderGrammarArticle(activeLesson);else if(route==="review")renderReview();else if(route==="dictionary")renderDictionary();else if(route==="lesson")renderLesson();else renderProfile()}
 render();nav();
 if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));

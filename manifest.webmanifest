@@ -1,6 +1,6 @@
 {
-  "name": "Ćao! — сербский язык",
-  "short_name": "Ćao!",
+  "name": "Ćao! Serbian v8.1.0",
+  "short_name": "Ćao! v8.1.0",
   "description": "Большой курс сербского языка с 3000+ словами и фразами",
   "start_url": "./index.html",
   "scope": "./",
